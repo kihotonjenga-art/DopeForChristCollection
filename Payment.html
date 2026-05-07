@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment | DopeForChrist</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:#111;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .payment-box{
+      background:#1b1b1b;
+      width:100%;
+      max-width:450px;
+      padding:35px;
+      border-radius:15px;
+      box-shadow:0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:25px;
+      color:gold;
+    }
+
+    .product-details{
+      background:#222;
+      padding:20px;
+      border-radius:10px;
+      margin-bottom:25px;
+    }
+
+    .product-details h2{
+      margin-bottom:10px;
+      color:gold;
+    }
+
+    .price{
+      font-size:24px;
+      font-weight:bold;
+    }
+
+    form{
+      display:flex;
+      flex-direction:column;
+    }
+
+    label{
+      margin-bottom:8px;
+      margin-top:15px;
+    }
+
+    input{
+      padding:14px;
+      border:none;
+      border-radius:8px;
+      outline:none;
+      font-size:16px;
+    }
+
+    button{
+      margin-top:25px;
+      padding:15px;
+      border:none;
+      border-radius:8px;
+      background:gold;
+      color:black;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:white;
+    }
+
+    .note{
+      margin-top:20px;
+      font-size:14px;
+      color:#bbb;
+      text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="payment-box">
+
+    <h1>Complete Payment</h1>
+
+    <div class="product-details">
+      <h2 id="productName">Product</h2>
+      <p class="price" id="productPrice">KES 0</p>
+    </div>
+
+    <form id="paymentForm">
+
+      <label>Full Name</label>
+      <input type="text" placeholder="Enter your name" required>
+
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="e.g 254712345678" required>
+
+      <button type="submit">Pay Now</button>
+
+    </form>
+
+    <p class="note">
+      You will receive a payment prompt on your phone.
+    </p>
+
+  </div>
+
+  <script>
+
+    // GET PRODUCT INFO FROM URL
+    const params = new URLSearchParams(window.location.search);
+
+    const name = params.get("name");
+    const price = params.get("price");
+
+    document.getElementById("productName").innerText = name;
+    document.getElementById("productPrice").innerText = "KES " + price;
+
+    // PAYMENT FUNCTION
+    document.getElementById("paymentForm").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const phone = document.getElementById("phone").value;
+
+      alert(
+        "STK Push Sent to " + phone + 
+        "\\n\\nAmount: KES " + price +
+        "\\nProduct: " + name
+      );
+
+      // HERE YOU WILL CONNECT MPESA API
+      // Example backend endpoint:
+      // fetch('/stkpush', { method:'POST' })
+
+    });
+
+  </script>
+  <button onclick="window.location.href='index.html'" style="position:absolute; top:20px; left:20px; background:none; color:white; border:none; font-size:16px; cursor:pointer;">
+    &larr; Back
+  </button>
+
+</body>
+</html>
