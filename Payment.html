@@ -127,36 +127,68 @@
 
   </div>
 
-  <script>
+ <script>
 
-    // GET PRODUCT INFO FROM URL
-    const params = new URLSearchParams(window.location.search);
+  // GET PRODUCT INFO FROM URL
+  const params = new URLSearchParams(window.location.search);
 
-    const name = params.get("name");
-    const price = params.get("price");
+  const name = params.get("name");
+  const price = params.get("price");
 
-    document.getElementById("productName").innerText = name;
-    document.getElementById("productPrice").innerText = "KES " + price;
+  document.getElementById("productName").innerText = name;
+  document.getElementById("productPrice").innerText = "KES " + price;
 
-    // PAYMENT FUNCTION
-    document.getElementById("paymentForm").addEventListener("submit", function(e){
-      e.preventDefault();
+  // REAL PAYMENT FUNCTION
+  document.getElementById("paymentForm").addEventListener("submit", async function(e){
 
-      const phone = document.getElementById("phone").value;
+    e.preventDefault();
 
-      alert(
-        "STK Push Sent to " + phone + 
-        "\\n\\nAmount: KES " + price +
-        "\\nProduct: " + name
-      );
+    const phone = document.getElementById("phone").value;
 
-      // HERE YOU WILL CONNECT MPESA API
-      // Example backend endpoint:
-      // fetch('/stkpush', { method:'POST' })
+    try{
 
-    });
+      const response = await fetch("http://localhost:5000/stkpush", {
 
-  </script>
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+          phone,
+          amount:price,
+          product:name
+        })
+
+      });
+
+      const data = await response.json();
+
+      if(data.success){
+
+        alert(
+          "STK Push Sent Successfully!\n\n" +
+          "Check your phone to complete payment."
+        );
+
+      }else{
+
+        alert("Payment failed: " + data.message);
+
+      }
+
+    }catch(error){
+
+      alert("Server Error. Please try again.");
+
+      console.log(error);
+
+    }
+
+  });
+
+</script>
   <button onclick="window.location.href='index.html'" style="position:absolute; top:20px; left:20px; background:none; color:white; border:none; font-size:16px; cursor:pointer;">
     &larr; Back
   </button>
