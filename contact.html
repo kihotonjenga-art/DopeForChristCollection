@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact - DopeForChristCollection</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:#f5f5f5;
+      color:#111;
+    }
+
+    /* HEADER */
+    header{
+      background:black;
+      color:white;
+      padding:20px 60px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .logo{
+      font-size:24px;
+      font-weight:bold;
+      letter-spacing:2px;
+    }
+
+    nav{
+      display:flex;
+      gap:25px;
+    }
+
+    nav a{
+      color:white;
+      text-decoration:none;
+      text-transform:uppercase;
+      font-size:14px;
+      transition:0.3s;
+    }
+
+    nav a:hover{
+      color:#bbb;
+    }
+
+    /* HERO */
+    .hero{
+      height:45vh;
+      background:url('https://images.unsplash.com/photo-1523398002811-999ca8dec234?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      color:white;
+      position:relative;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.6);
+    }
+
+    .hero-content{
+      position:relative;
+      z-index:2;
+      padding:20px;
+    }
+
+    .hero-content h1{
+      font-size:55px;
+      margin-bottom:20px;
+    }
+
+    .hero-content p{
+      font-size:20px;
+      max-width:700px;
+      line-height:1.6;
+    }
+
+    /* CONTACT SECTION */
+    .contact-section{
+      padding:80px 60px;
+    }
+
+    .contact-container{
+      max-width:1200px;
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(350px,1fr));
+      gap:50px;
+      align-items:start;
+    }
+
+    /* LEFT INFO */
+    .contact-info{
+      background:white;
+      padding:40px;
+      border-radius:10px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .contact-info h2{
+      font-size:36px;
+      margin-bottom:25px;
+    }
+
+    .contact-info p{
+      margin-bottom:18px;
+      line-height:1.8;
+      color:#555;
+      font-size:17px;
+    }
+
+    .contact-details{
+      margin-top:30px;
+    }
+
+    .contact-details div{
+      margin-bottom:20px;
+    }
+
+    .contact-details h3{
+      margin-bottom:8px;
+      color:black;
+    }
+
+    /* FORM */
+    .contact-form{
+      background:white;
+      padding:40px;
+      border-radius:10px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .contact-form h2{
+      font-size:36px;
+      margin-bottom:25px;
+    }
+
+    .input-group{
+      margin-bottom:20px;
+    }
+
+    .input-group label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:bold;
+    }
+
+    .input-group input,
+    .input-group textarea,
+    .input-group select{
+      width:100%;
+      padding:15px;
+      border:1px solid #ccc;
+      border-radius:6px;
+      font-size:16px;
+    }
+
+    .input-group textarea{
+      resize:none;
+      height:160px;
+    }
+
+    button{
+      width:100%;
+      padding:15px;
+      border:none;
+      background:black;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+      border-radius:6px;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#333;
+    }
+
+    /* FAQ */
+    .faq{
+      padding:80px 60px;
+      background:#111;
+      color:white;
+    }
+
+    .faq h2{
+      text-align:center;
+      margin-bottom:50px;
+      font-size:40px;
+    }
+
+    .faq-grid{
+      max-width:1100px;
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+      gap:30px;
+    }
+
+    .faq-card{
+      background:#1d1d1d;
+      padding:30px;
+      border-radius:10px;
+    }
+
+    .faq-card h3{
+      margin-bottom:15px;
+    }
+
+    .faq-card p{
+      color:#ccc;
+      line-height:1.7;
+    }
+
+    footer{
+      background:black;
+      color:white;
+      text-align:center;
+      padding:25px;
+    }
+
+    @media(max-width:768px){
+
+      header{
+        flex-direction:column;
+        gap:20px;
+        padding:20px;
+      }
+
+      .hero-content h1{
+        font-size:40px;
+      }
+
+      .hero-content p{
+        font-size:16px;
+      }
+
+      .contact-section,
+      .faq{
+        padding:50px 20px;
+      }
+
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+
+    <div class="logo">DopeForChristCollection</div>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <h1>Contact Us</h1>
+
+      <p>
+        We'd love to hear from you. Share your opinions,
+        suggestions, feedback, or prayer requests with us.
+      </p>
+
+    </div>
+
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section class="contact-section">
+
+    <div class="contact-container">
+
+      <!-- LEFT SIDE -->
+      <div class="contact-info">
+
+        <h2>Let's Connect</h2>
+
+        <p>
+          At DopeForChristCollection, we value every voice in our
+          community. Whether you want to suggest a new clothing design,
+          give feedback on our collections, collaborate with us,
+          or simply share your testimony, we are always ready to listen.
+        </p>
+
+        <p>
+          Your feedback helps us grow and continue creating fashion
+          that inspires faith, confidence, and creativity.
+        </p>
+
+        <div class="contact-details">
+
+          <div>
+            <h3>Email</h3>
+            <p>dopeforchrist@gmail.com</p>
+          </div>
+
+          <div>
+            <h3>Phone</h3>
+            <p>+254 712 345 678</p>
+          </div>
+
+          <div>
+            <h3>Instagram</h3>
+            <p>@DopeForChristCollection</p>
+          </div>
+
+          <div>
+            <h3>Business Hours</h3>
+            <p>Monday - Saturday | 8:00 AM - 6:00 PM</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="contact-form">
+
+        <h2>Send Your Feedback</h2>
+
+        <!--
+          REAL LIFE FUNCTIONAL FORM
+          1. Go to https://formspree.io
+          2. Create a free account
+          3. Replace YOUR_FORM_ID below with your real Formspree ID
+        -->
+
+        <form
+          action="https://formspree.io/f/mgodldvv"
+          method="POST"
+        >
+
+          <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" name="name" required>
+          </div>
+
+          <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" name="email" required>
+          </div>
+
+          <div class="input-group">
+            <label>Phone Number</label>
+            <input type="tel" name="phone">
+          </div>
+
+          <div class="input-group">
+            <label>Feedback Type</label>
+
+            <select name="feedbackType" required>
+              <option value="">Select Option</option>
+              <option>Suggestion</option>
+              <option>Opinion</option>
+              <option>Complaint</option>
+              <option>Collaboration</option>
+              <option>Prayer Request</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Your Message</label>
+
+            <textarea
+              name="message"
+              placeholder="Write your message here..."
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit">
+            Submit Feedback
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+
+    <h2>Frequently Asked Questions</h2>
+
+    <div class="faq-grid">
+
+      <div class="faq-card">
+
+        <h3>Do you deliver countrywide?</h3>
+
+        <p>
+          Yes. We deliver across Kenya and selected international locations.
+        </p>
+
+      </div>
+
+      <div class="faq-card">
+
+        <h3>How long does delivery take?</h3>
+
+        <p>
+          Delivery usually takes 1-3 business days within Nairobi
+          and 3-7 days outside Nairobi.
+        </p>
+
+      </div>
+
+      <div class="faq-card">
+
+        <h3>Can I suggest clothing designs?</h3>
+
+        <p>
+          Absolutely. We encourage our community to share creative ideas,
+          scriptures, and design inspiration.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 DopeForChristCollection | All Rights Reserved</p>
+  </footer>
+
+</body>
+</html>
+```
