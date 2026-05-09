@@ -1,68 +1,92 @@
-// REAL MPESA STK PUSH (BACKEND EXAMPLE USING NODE.JS)
-
 const express = require("express");
+const cors = require("cors");
 const axios = require("axios");
+
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
-const consumerKey = "YOUR_CONSUMER_KEY";
-const consumerSecret = "YOUR_CONSUMER_SECRET";
+const consumerKey = "QaBQppqmG3XUicmT6nnA2aGcPsAANK7qxAJ1WQrF9RMH9sAH";
+const consumerSecret = "J5eDUOqo4fTGU7nQQwcYLWft8N0ItxnTCGfmihWY7zAvh1ND1kZDn32h7gv7aXbU";
 
 app.post("/stkpush", async (req, res) => {
 
-    const { phone, amount } = req.body;
+  const { phone, amount, product } = req.body;
 
-    try {
+  try {
 
-        // GENERATE ACCESS TOKEN
-        const auth = Buffer.from(
-          consumerKey + ":" + consumerSecret
-        ).toString("base64");
+    // GENERATE ACCESS TOKEN
+    const auth = Buffer.from(
+      `${consumerKey}:${consumerSecret}`
+    ).toString("base64");
 
-        const tokenResponse = await axios.get(
-          "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-          {
-            headers:{
-              Authorization: `Basic ${auth}`
-            }
-          }
-        );
+    const tokenResponse = await axios.get(
+      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+      {
+        headers: {
+          Authorization: `Basic ${auth}`
+        }
+      }
+    );
 
-        const accessToken = tokenResponse.data.access_token;
+    const accessToken = tokenResponse.data.access_token;
 
-        // SEND STK PUSH
-        const response = await axios.post(
-          "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-          {
-            BusinessShortCode: "174379",
-            Password: "YOUR_PASSWORD",
-            Timestamp: "20260507120000",
-            TransactionType: "CustomerPayBillOnline",
-            Amount: amount,
-            PartyA: phone,
-            PartyB: "174379",
-            PhoneNumber: phone,
-            CallBackURL: "https://yourdomain.com/callback",
-            AccountReference: "DopeForChrist",
-            TransactionDesc: "Clothing Payment"
-          },
-          {
-            headers:{
-              Authorization:`Bearer ${accessToken}`
-            }
-          }
-        );
+    // TIMESTAMP
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:TZ.]/g, "")
+      .slice(0, 14);
 
-        res.json(response.data);
+    const shortcode = "174379";
 
-    } catch(error){
-        console.log(error);
-        res.send("Error sending STK push");
-    }
+    const passkey = "YOUR_PASSKEY";
+
+    const password = Buffer.from(
+      shortcode + passkey + timestamp
+    ).toString("base64");
+
+    // STK PUSH
+    const stkResponse = await axios.post(
+      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+      {
+        BusinessShortCode: shortcode,
+        Password: password,
+        Timestamp: timestamp,
+        TransactionType: "CustomerPayBillOnline",
+        Amount: amount,
+        PartyA: phone,
+        PartyB: shortcode,
+        PhoneNumber: phone,
+        CallBackURL: "https://yourdomain.com/callback",
+        AccountReference: product,
+        TransactionDesc: "Payment"
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    );
+
+    res.json({
+      success: true,
+      response: stkResponse.data
+    });
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+
+    res.json({
+      success: false,
+      message: "STK Push Failed"
+    });
+
+  }
 
 });
 
-app.listen(3000, ()=>{
-    console.log("Server running on port 3000");
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
 });
