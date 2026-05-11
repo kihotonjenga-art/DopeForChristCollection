@@ -40,7 +40,7 @@ app.post("/stkpush", async (req, res) => {
 
     const shortcode = "174379";
 
-    const passkey = "YOUR_PASSKEY";
+    const passkey = "bfb279f9aa9bdbcf158e97ddf3e7a2e0c919";
 
     const password = Buffer.from(
       shortcode + passkey + timestamp
