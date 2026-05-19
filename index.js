@@ -40,7 +40,8 @@ app.post("/stkpush", async (req, res) => {
 
     const shortcode = "174379";
 
-    const passkey = "bfb279f9aa9bdbcf158e97ddf3e7a2e0c919";
+const passkey =
+"bfb279f9aa9bdbcf158e97ddf3e7a2e0cd8b7a4b5c7c2e8e9";
 
     const password = Buffer.from(
       shortcode + passkey + timestamp
@@ -58,7 +59,7 @@ app.post("/stkpush", async (req, res) => {
         PartyA: phone,
         PartyB: shortcode,
         PhoneNumber: phone,
-        CallBackURL: "https://yourdomain.com/callback",
+        CallBackURL: "https://yourdomain.vercel.app/api/callback",
         AccountReference: product,
         TransactionDesc: "Payment"
       },
@@ -68,13 +69,58 @@ app.post("/stkpush", async (req, res) => {
         }
       }
     );
+const formattedPhone =
+phone.startsWith("0")
+? "254" + phone.slice(1)
+: phone.replace("+", "");
+
+const stkResponse = await axios.post(
+"https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+{
+   BusinessShortCode: shortcode,
+   Password: password,
+   Timestamp: timestamp,
+   TransactionType:
+   "CustomerPayBillOnline",
+
+   Amount: amount,
+
+   PartyA: formattedPhone,
+   PartyB: shortcode,
+
+   PhoneNumber:
+   formattedPhone,
+
+   CallBackURL:
+   "https://yourdomain.vercel.app/api/callback",
+
+   AccountReference:
+   product,
+
+   TransactionDesc:
+   "Payment"
+},
+{
+headers:{
+Authorization:
+`Bearer ${accessToken}`
+}
+}
+);
+
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+     ;
 
     res.json({
       success: true,
       response: stkResponse.data
     });
 
-  } catch (error) {
+   } catch (error) {
 
     console.log(error.response?.data || error.message);
 
