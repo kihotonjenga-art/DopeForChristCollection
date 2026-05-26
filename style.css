@@ -192,6 +192,29 @@
     }
 
     /* ABOUT */
+    .logo{
+      font-size:24px;
+      font-weight:bold;
+      letter-spacing:2px;
+    }
+
+    nav{
+      display:flex;
+      gap:25px;
+    }
+
+    nav a{
+      text-decoration:none;
+      color:black;
+      font-size:14px;
+      text-transform:uppercase;
+      transition:0.3s;
+    }
+
+    nav a:hover{
+      color:#777;
+    }
+
     .about{
       padding:80px 60px;
       background:#111;
