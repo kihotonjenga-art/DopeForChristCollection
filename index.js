@@ -4,6 +4,13 @@ const axios = require("axios");
 
 const app = express();
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // or your specific domain
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
 
@@ -47,6 +54,22 @@ const passkey =
       shortcode + passkey + timestamp
     ).toString("base64");
 
+fetch(
+  "https://dope-for-christ-collection-git-main-kihotonjenga-arts-projects.vercel.app/api/stkpush",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      phone,
+      amount: price,
+      product: name
+    })
+  }
+);
+
+
     // STK PUSH
     const stkResponse = await axios.post(
       "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
@@ -73,6 +96,29 @@ const formattedPhone =
 phone.startsWith("0")
 ? "254" + phone.slice(1)
 : phone.replace("+", "");
+
+
+const response = await fetch("...", { method: "POST", body: JSON.stringify({ phone, amount, product }) });
+
+if (!response.ok) {
+  const errText = await response.text();
+  alert("HTTP Error " + response.status + ": " + errText);
+  return;
+}
+
+let phone = document.getElementById("phone").value.trim();
+
+// Auto-fix format
+if (phone.startsWith("0")) {
+  phone = "254" + phone.slice(1);
+}
+
+if (!/^254\d{9}$/.test(phone)) {
+  alert("Invalid phone number. Use format: 254712345678");
+  return;
+}
+
+const data = await response.json();
 
 const stkResponse = await axios.post(
 "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
