@@ -15,7 +15,7 @@ const MPESA_CONSUMER_KEY    = process.env.MPESA_CONSUMER_KEY    || "QaBQppqmG3XU
 const MPESA_CONSUMER_SECRET = process.env.MPESA_CONSUMER_SECRET || "J5eDUOqo4fTGU7nQQwcYLWft8N0ItxnTCGfmihWY7zAvh1ND1kZDn32h7gv7aXbU";
 const SHORTCODE             = "174379";
 const PASSKEY               = "bfb279f9aa9bdbcf158e97ddf3e7a2e0cd8b7a4b5c7c2e8e9";
-const CALLBACK_URL          = process.env.CALLBACK_URL || "https://yourdomain.vercel.app/api/mpesa-callback";
+const CALLBACK_URL          = process.env.CALLBACK_URL || "https:///https://dope-for-christ-collection-jrxlj4pxi-kihotonjenga-arts-projects.vercel.app///api/mpesa-callback";
  
 // ── Helper: format phone ──────────────────────────────────────────────────────
 function formatPhone(p) {
