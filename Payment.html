@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payment | DopeForChrist</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <title>Card Payment | DopeForChrist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://js.stripe.com/v3/"></script>
  
   <style>
     :root {
@@ -32,7 +33,6 @@
       justify-content: center;
       align-items: center;
       padding: 24px 16px;
-      position: relative;
     }
  
     body::before {
@@ -59,19 +59,18 @@
       transition: all 0.2s;
       z-index: 10;
     }
-    .back-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--gold); color: var(--gold); }
+    .back-btn:hover { border-color: var(--gold); color: var(--gold); }
  
     .payment-box {
       background: var(--card);
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
       border-radius: 20px;
       border: 1px solid var(--border);
       overflow: hidden;
       box-shadow: 0 30px 80px rgba(0,0,0,0.6);
       animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
     }
- 
     @keyframes slideUp {
       from { opacity:0; transform:translateY(30px); }
       to   { opacity:1; transform:translateY(0); }
@@ -92,36 +91,51 @@
       width: 60%; height: 1px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
     }
-    .brand {
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      letter-spacing: 4px;
-      color: var(--gold-dim);
-      text-transform: uppercase;
-      margin-bottom: 6px;
+    .brand { font-family:'Cinzel',serif; font-size:11px; letter-spacing:4px; color:var(--gold-dim); text-transform:uppercase; margin-bottom:6px; }
+    .card-header h1 { font-family:'Cinzel',serif; font-size:20px; color:var(--gold); }
+ 
+    /* Payment method tabs */
+    .method-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
     }
-    .card-header h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 22px;
+    .tab {
+      flex: 1;
+      padding: 14px;
+      text-align: center;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--gold);
       letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: var(--muted);
+      border: none;
+      background: none;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
     }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(240,192,64,0.04); }
+    .tab:hover:not(.active) { color: var(--text); }
  
     .product-details {
-      padding: 24px 32px;
+      padding: 20px 32px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: rgba(255,255,255,0.02);
     }
-    .product-name { font-size:15px; font-weight:700; color:var(--text); }
+    .product-name { font-size:15px; font-weight:700; }
     .product-sub  { font-size:12px; color:var(--muted); margin-top:2px; }
     .price-tag    { text-align:right; }
-    .price-tag .amount   { font-family:'Cinzel',serif; font-size:22px; font-weight:700; color:var(--gold); }
-    .price-tag .currency { font-size:12px; color:var(--muted); letter-spacing:1px; }
+    .price-tag .amount   { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:var(--gold); }
+    .price-tag .currency { font-size:11px; color:var(--muted); letter-spacing:1px; }
  
     .form-body { padding: 28px 32px 32px; }
+ 
+    /* Panel visibility */
+    .panel { display: none; }
+    .panel.active { display: block; }
  
     .field { margin-bottom: 18px; }
  
@@ -135,7 +149,7 @@
       margin-bottom: 8px;
     }
  
-    input {
+    input, select {
       width: 100%;
       padding: 14px 16px;
       background: var(--surface);
@@ -148,10 +162,24 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     input::placeholder { color: #444; }
-    input:focus { border-color: var(--gold-dim); box-shadow: 0 0 0 3px rgba(240,192,64,0.08); }
+    input:focus, select:focus { border-color: var(--gold-dim); box-shadow: 0 0 0 3px rgba(240,192,64,0.08); }
     input.error { border-color: var(--error); }
+    select option { background: #1e1e1e; }
  
     .field-hint { font-size:11px; color:var(--muted); margin-top:5px; }
+ 
+    /* Stripe card element container */
+    .stripe-field {
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .stripe-field.focused { border-color: var(--gold-dim); box-shadow: 0 0 0 3px rgba(240,192,64,0.08); }
+ 
+    /* Two-column row */
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
  
     .pay-btn {
       width: 100%;
@@ -185,7 +213,7 @@
       vertical-align: middle;
       margin-right: 8px;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin { to { transform:rotate(360deg); } }
  
     .status-msg {
       margin-top: 16px;
@@ -197,9 +225,26 @@
       animation: fadeIn 0.3s ease;
     }
     @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
- 
     .status-msg.error   { display:block; background:rgba(255,95,95,0.1); border:1px solid rgba(255,95,95,0.3); color:var(--error); }
     .status-msg.success { display:block; background:rgba(76,222,140,0.1); border:1px solid rgba(76,222,140,0.3); color:var(--success); }
+ 
+    /* Card brand icons */
+    .card-brands {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+    .card-brands span {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
  
     .note {
       margin-top: 18px;
@@ -210,6 +255,12 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+    }
+ 
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -225,49 +276,108 @@
       <h1>Complete Payment</h1>
     </div>
  
+    <!-- Tabs -->
+    <div class="method-tabs">
+      <button class="tab active" onclick="switchTab('mpesa', this)">&#128241; M-Pesa</button>
+      <button class="tab"        onclick="switchTab('card', this)">&#128179; Card / Foreign</button>
+    </div>
+ 
+    <!-- Product summary -->
     <div class="product-details">
       <div>
         <div class="product-name" id="productName">Loading...</div>
         <div class="product-sub">1 item</div>
       </div>
       <div class="price-tag">
-        <div class="currency">KES</div>
-        <div class="amount" id="productPrice">0</div>
+        <div class="currency" id="currencyLabel">KES</div>
+        <div class="amount"   id="productPrice">0</div>
       </div>
     </div>
  
     <div class="form-body">
-      <form id="paymentForm">
+ 
+      <!-- ── M-PESA PANEL ──────────────────────────────────────────────── -->
+      <div id="mpesaPanel" class="panel active">
  
         <div class="field">
-          <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" placeholder="Enter your full name" required />
+          <label for="mpesaName">Full Name</label>
+          <input type="text" id="mpesaName" placeholder="Enter your full name" required/>
         </div>
  
         <div class="field">
-          <label for="phone">M-Pesa Phone Number</label>
-          <input type="tel" id="phone" placeholder="0712 345 678" required />
+          <label for="mpesaPhone">M-Pesa Phone Number</label>
+          <input type="tel" id="mpesaPhone" placeholder="0712 345 678" required/>
           <p class="field-hint">Enter the number registered with M-Pesa</p>
         </div>
  
-        <button type="submit" class="pay-btn" id="payBtn">PAY NOW</button>
+        <button class="pay-btn" id="mpesaBtn" onclick="payMpesa()">PAY WITH M-PESA</button>
+        <div class="status-msg" id="mpesaStatus"></div>
  
-      </form>
+        <p class="note">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Secured via Safaricom M-Pesa
+        </p>
+      </div>
  
-      <div class="status-msg" id="statusMsg"></div>
+      <!-- ── STRIPE CARD PANEL ─────────────────────────────────────────── -->
+      <div id="cardPanel" class="panel">
  
-      <p class="note">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-        Secured via Safaricom M-Pesa
-      </p>
+        <div class="card-brands">
+          <span>VISA</span>
+          <span>MASTERCARD</span>
+          <span>AMEX</span>
+        </div>
+ 
+        <div class="field">
+          <label for="cardName">Name on Card</label>
+          <input type="text" id="cardName" placeholder="John Doe" required/>
+        </div>
+ 
+        <div class="field">
+          <label for="cardEmail">Email Address</label>
+          <input type="email" id="cardEmail" placeholder="you@example.com" required/>
+        </div>
+ 
+        <div class="field">
+          <label>Currency</label>
+          <select id="currencySelect" onchange="updateCurrency()">
+            <option value="usd">USD — US Dollar</option>
+            <option value="eur">EUR — Euro</option>
+            <option value="gbp">GBP — British Pound</option>
+            <option value="kes">KES — Kenyan Shilling</option>
+          </select>
+        </div>
+ 
+        <div class="divider"></div>
+ 
+        <div class="field">
+          <label>Card Details</label>
+          <div class="stripe-field" id="cardElement"></div>
+          <p class="field-hint">Your card is encrypted and never stored on our servers</p>
+        </div>
+ 
+        <button class="pay-btn" id="stripeBtn" onclick="payStripe()">PAY WITH CARD</button>
+        <div class="status-msg" id="stripeStatus"></div>
+ 
+        <p class="note">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Payments processed securely by Stripe
+        </p>
+      </div>
+ 
     </div>
- 
   </div>
  
   <script>
-    // 1. Load product info from URL
+    // ── Config ────────────────────────────────────────────────────────────────
+    const API_BASE       = "https://dope-for-christ-collection-git-main-kihotonjenga-arts-projects.vercel.app";
+    const STRIPE_PUB_KEY = "pk_test_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY"; // ← replace this
+ 
+    // ── Load product from URL ─────────────────────────────────────────────────
     const params       = new URLSearchParams(window.location.search);
     const productName  = params.get("name")  || "Item";
     const productPrice = params.get("price") || "0";
@@ -275,102 +385,168 @@
     document.getElementById("productName").innerText  = productName;
     document.getElementById("productPrice").innerText = productPrice;
  
-    // 2. Phone formatter — accepts 07xx, 01xx, 254xx, +254xx
-    function formatPhone(raw) {
-      let p = raw.trim().replace(/[\s\-()]/g, "");
-      if (p.startsWith("+"))                          p = p.slice(1);
-      if (p.startsWith("07") || p.startsWith("01"))   p = "254" + p.slice(1);
-      return p;
+    // ── Tab switcher ──────────────────────────────────────────────────────────
+    function switchTab(tab, btn) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(tab + "Panel").classList.add("active");
     }
  
-    function isValidPhone(p) {
-      return /^254[17]\d{8}$/.test(p);
+    // ── Currency label updater ────────────────────────────────────────────────
+    function updateCurrency() {
+      const cur = document.getElementById("currencySelect").value.toUpperCase();
+      document.getElementById("currencyLabel").innerText = cur;
     }
  
-    // 3. Status helpers
-    function showStatus(msg, type) {
-      const el = document.getElementById("statusMsg");
+    // ── Status helpers ────────────────────────────────────────────────────────
+    function showStatus(id, msg, type) {
+      const el = document.getElementById(id);
       el.className = "status-msg " + type;
       el.innerHTML = msg;
     }
-    function clearStatus() {
-      const el = document.getElementById("statusMsg");
+    function clearStatus(id) {
+      const el = document.getElementById(id);
       el.className = "status-msg";
       el.innerHTML = "";
     }
  
-    // 4. Submit handler
-    document.getElementById("paymentForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      clearStatus();
+    // ── Phone formatter ───────────────────────────────────────────────────────
+    function formatPhone(p) {
+      p = p.trim().replace(/[\s\-()]/g, "");
+      if (p.startsWith("+"))                        p = p.slice(1);
+      if (p.startsWith("07") || p.startsWith("01")) p = "254" + p.slice(1);
+      return p;
+    }
  
-      const phoneInput     = document.getElementById("phone");
-      const payBtn         = document.getElementById("payBtn");
-      const formattedPhone = formatPhone(phoneInput.value);
+    // ─────────────────────────────────────────────────────────────────────────
+    // M-PESA PAYMENT
+    // ─────────────────────────────────────────────────────────────────────────
+    async function payMpesa() {
+      clearStatus("mpesaStatus");
+      const btn   = document.getElementById("mpesaBtn");
+      const phone = formatPhone(document.getElementById("mpesaPhone").value);
  
-      // Validate
-      if (!isValidPhone(formattedPhone)) {
-        phoneInput.classList.add("error");
-        showStatus("&#10060; Invalid number. Use your M-Pesa number e.g. <strong>0712345678</strong>", "error");
+      if (!/^254[17]\d{8}$/.test(phone)) {
+        showStatus("mpesaStatus", "&#10060; Invalid number. Use your M-Pesa number e.g. <strong>0712345678</strong>", "error");
         return;
       }
-      phoneInput.classList.remove("error");
  
-      // Loading state
-      payBtn.disabled  = true;
-      payBtn.innerHTML = '<span class="spinner"></span> Processing...';
+      btn.disabled  = true;
+      btn.innerHTML = '<span class="spinner"></span> Sending...';
  
       try {
-        const response = await fetch(
-          "https://dope-for-christ-collection-git-main-kihotonjenga-arts-projects.vercel.app/stkpush",
-          {
-            method:  "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              phone:   formattedPhone,
-              amount:  productPrice,
-              product: productName
-            })
-          }
-        );
+        const res = await fetch(`${API_BASE}/stkpush`, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, amount: productPrice, product: productName })
+        });
  
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error("Server error " + response.status + ": " + errText);
-        }
- 
-        const data = await response.json();
+        if (!res.ok) throw new Error("Server error " + res.status);
+        const data = await res.json();
  
         if (data.success) {
-          showStatus(
-            "&#9989; <strong>STK Push sent!</strong> Check your phone and enter your M-Pesa PIN to complete payment.",
-            "success"
-          );
-          payBtn.innerHTML = "&#10003; REQUEST SENT";
-          // Keep disabled — prevents double payment
+          showStatus("mpesaStatus", "&#9989; <strong>STK Push sent!</strong> Check your phone and enter your M-Pesa PIN.", "success");
+          btn.innerHTML = "&#10003; REQUEST SENT";
         } else {
-          showStatus("&#10060; " + (data.message || "Payment request failed."), "error");
-          payBtn.disabled  = false;
-          payBtn.innerHTML = "PAY NOW";
+          showStatus("mpesaStatus", "&#10060; " + (data.message || "Payment failed."), "error");
+          btn.disabled  = false;
+          btn.innerHTML = "PAY WITH M-PESA";
+        }
+      } catch (err) {
+        let msg = err.message.includes("fetch") ? "Cannot reach server. Check your internet." : err.message;
+        showStatus("mpesaStatus", "&#10060; " + msg, "error");
+        btn.disabled  = false;
+        btn.innerHTML = "PAY WITH M-PESA";
+      }
+    }
+ 
+    // ─────────────────────────────────────────────────────────────────────────
+    // STRIPE CARD PAYMENT
+    // ─────────────────────────────────────────────────────────────────────────
+    const stripeClient = Stripe(STRIPE_PUB_KEY);
+    const elements     = stripeClient.elements({
+      appearance: {
+        theme: "night",
+        variables: {
+          colorPrimary:    "#f0c040",
+          colorBackground: "#1e1e1e",
+          colorText:       "#e8e8e8",
+          borderRadius:    "8px",
+          fontFamily:      "Lato, sans-serif"
+        }
+      }
+    });
+ 
+    const cardElement = elements.create("card", {
+      style: {
+        base: {
+          color:           "#e8e8e8",
+          fontFamily:      "Lato, sans-serif",
+          fontSize:        "15px",
+          "::placeholder": { color: "#444" }
+        }
+      }
+    });
+    cardElement.mount("#cardElement");
+ 
+    cardElement.on("focus", () => document.getElementById("cardElement").classList.add("focused"));
+    cardElement.on("blur",  () => document.getElementById("cardElement").classList.remove("focused"));
+ 
+    async function payStripe() {
+      clearStatus("stripeStatus");
+      const btn      = document.getElementById("stripeBtn");
+      const name     = document.getElementById("cardName").value.trim();
+      const email    = document.getElementById("cardEmail").value.trim();
+      const currency = document.getElementById("currencySelect").value;
+ 
+      if (!name || !email) {
+        showStatus("stripeStatus", "&#10060; Please fill in your name and email.", "error");
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showStatus("stripeStatus", "&#10060; Please enter a valid email address.", "error");
+        return;
+      }
+ 
+      btn.disabled  = true;
+      btn.innerHTML = '<span class="spinner"></span> Processing...';
+ 
+      try {
+        // 1. Create payment intent on server
+        const intentRes = await fetch(`${API_BASE}/stripe/create-payment-intent`, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: productPrice, currency, product: productName })
+        });
+ 
+        if (!intentRes.ok) throw new Error("Server error " + intentRes.status);
+        const { clientSecret } = await intentRes.json();
+ 
+        // 2. Confirm card payment with Stripe.js
+        const { error, paymentIntent } = await stripeClient.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: { name, email }
+          }
+        });
+ 
+        if (error) {
+          showStatus("stripeStatus", "&#10060; " + error.message, "error");
+          btn.disabled  = false;
+          btn.innerHTML = "PAY WITH CARD";
+        } else if (paymentIntent.status === "succeeded") {
+          showStatus("stripeStatus", "&#9989; <strong>Payment successful!</strong> Thank you for your order. A receipt will be sent to " + email, "success");
+          btn.innerHTML = "&#10003; PAID";
         }
  
       } catch (err) {
-        console.error("Payment error:", err);
-        let msg = err.message;
-        if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
-          msg = "Could not reach payment server. Check your internet and try again.";
-        }
-        showStatus("&#10060; " + msg, "error");
-        payBtn.disabled  = false;
-        payBtn.innerHTML = "PAY NOW";
+        let msg = err.message.includes("fetch") ? "Cannot reach server. Check your internet." : err.message;
+        showStatus("stripeStatus", "&#10060; " + msg, "error");
+        btn.disabled  = false;
+        btn.innerHTML = "PAY WITH CARD";
       }
-    });
- 
-    // Clear error styling on type
-    document.getElementById("phone").addEventListener("input", function () {
-      this.classList.remove("error");
-      clearStatus();
-    });
+    }
   </script>
  
 </body>
