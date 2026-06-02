@@ -3,183 +3,435 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="style.css">
   <title>DopeForChristCollection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
 
-  
-   <head>
-   
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #d4a853;
+      --gold-light: #e2bc71;
+      --bg: #0a0a0a;
+      --bg-card: #111111;
+      --bg-elevated: #0d0d0d;
+      --border: #1e1e1e;
+      --text: #f0ece4;
+      --muted: #888888;
+      --display: 'Bebas Neue', sans-serif;
+      --body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--display);
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+
+    nav { display: flex; gap: 28px; align-items: center; }
+    nav a {
+      font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--gold); }
+    nav .nav-cta {
+      background: var(--gold); color: #0a0a0a;
+      padding: 8px 18px; border-radius: 2px;
+      font-weight: 600; color: #0a0a0a;
+    }
+    nav .nav-cta:hover { background: var(--gold-light); color: #0a0a0a; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 88vh;
+      display: flex; align-items: center;
+      padding: 80px 48px;
+      background: #0f0f0f;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg-text {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--display);
+      font-size: clamp(60px, 14vw, 160px);
+      letter-spacing: 12px;
+      color: rgba(255,255,255,0.025);
+      white-space: nowrap; pointer-events: none;
+      user-select: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 600px; }
+    .hero-eyebrow {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(56px, 8vw, 92px);
+      letter-spacing: 3px; line-height: 0.95;
+      color: var(--text); margin-bottom: 20px;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero p {
+      font-size: 16px; line-height: 1.8; color: var(--muted);
+      font-weight: 300; margin-bottom: 36px; max-width: 480px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-block; padding: 14px 32px;
+      background: var(--gold); color: #0a0a0a;
+      font-family: var(--body);
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; border-radius: 2px;
+      transition: background 0.2s, transform 0.15s;
+      border: none; cursor: pointer;
+    }
+    .btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    .btn-ghost {
+      background: transparent; color: var(--gold);
+      border: 1px solid var(--gold); padding: 13px 32px;
+    }
+    .btn-ghost:hover { background: var(--gold); color: #0a0a0a; }
+
+    /* ── SECTION WRAPPER ── */
+    .section { padding: 72px 48px; border-top: 1px solid var(--border); }
+
+    .section-label {
+      font-size: 10px; letter-spacing: 3.5px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px;
+    }
+    .section h2 {
+      font-family: var(--display);
+      font-size: 42px; letter-spacing: 2px;
+      color: var(--text); margin-bottom: 36px;
+    }
+
+    /* ── CATEGORIES ── */
+    .category-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    .category-card {
+      border-radius: 10px; overflow: hidden;
+      position: relative; aspect-ratio: 3/4;
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .category-card img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .category-card:hover img { transform: scale(1.06); }
+    .category-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 55%);
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 24px;
+    }
+    .category-overlay h3 {
+      font-family: var(--display);
+      font-size: 30px; letter-spacing: 3px;
+      color: var(--text); margin-bottom: 14px;
+    }
+
+    /* ── PRODUCTS ── */
+    .product-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+    }
+
+    .product-image {
+      aspect-ratio: 3/4; overflow: hidden;
+      position: relative; background: #161616;
+    }
+    .product-image img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .product-card:hover .product-image img { transform: scale(1.06); }
+
+    .product-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--gold); color: #0a0a0a;
+      font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 2px;
+    }
+
+    .product-body { padding: 16px 18px 20px; }
+    .product-body h3 {
+      font-size: 14px; font-weight: 600;
+      color: var(--text); margin-bottom: 4px;
+      letter-spacing: 0.3px;
+    }
+    .product-body .price {
+      font-family: var(--display);
+      font-size: 22px; letter-spacing: 1px;
+      color: var(--gold); margin-bottom: 14px;
+    }
+    .product-buy {
+      display: block; width: 100%; padding: 11px;
+      background: #1a1a1a; color: var(--text);
+      font-family: var(--body);
+      font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid #2a2a2a; border-radius: 4px;
+      text-align: center; text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .product-buy:hover { background: var(--gold); color: #0a0a0a; border-color: var(--gold); }
+
+    /* ── VERSE BANNER ── */
+    .verse-banner {
+      background: var(--gold);
+      padding: 36px 48px;
+      text-align: center;
+    }
+    .verse-banner p {
+      font-size: 15px; font-weight: 300; font-style: italic;
+      color: #0a0a0a; letter-spacing: 0.5px;
+      max-width: 560px; margin: 0 auto;
+      line-height: 1.7;
+    }
+    .verse-banner p strong { font-weight: 700; font-style: normal; }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+    }
+    .about-text p {
+      font-size: 15px; line-height: 1.85; color: var(--muted);
+      font-weight: 300;
+    }
+    .contact-items { display: flex; flex-direction: column; gap: 16px; }
+    .contact-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .contact-icon {
+      width: 36px; height: 36px; border-radius: 6px;
+      background: rgba(212,168,83,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .contact-item span { font-size: 13px; color: var(--muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 20px 48px;
+      background: #080808;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    footer p { font-size: 11px; color: #444; letter-spacing: 0.5px; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 11px; color: #555; text-decoration: none; letter-spacing: 1px; }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      header { padding: 16px 20px; }
+      nav .nav-cta { display: none; }
+      .hero { padding: 60px 20px; min-height: auto; }
+      .section { padding: 48px 20px; }
+      .category-grid { grid-template-columns: 1fr; }
+      .product-grid { grid-template-columns: 1fr 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      footer { padding: 16px 20px; }
+      .verse-banner { padding: 28px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .product-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
 
   <!-- HEADER -->
   <header>
-
     <div class="logo">DopeForChristCollection</div>
-
     <nav>
       <a href="index.html">Home</a>
       <a href="shop.html">Shop</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
+      <a href="shop.html#categories" class="btn nav-cta">Shop Now</a>
     </nav>
-
   </header>
 
   <!-- HERO -->
   <section class="hero">
-
+    <div class="hero-bg-text">DOPE FOR CHRIST</div>
     <div class="hero-content">
-      <h1>Faith Meets Fashion</h1>
-
+      <div class="hero-eyebrow">New 2026 Drop</div>
+      <h1>Faith<br>Meets<br><em>Fashion</em></h1>
       <p>
         Wear your faith boldly with DopeForChristCollection.
         Premium Christian streetwear designed for believers who
         want style and purpose together.
       </p>
-
-      <a href="shop.html#categories" class="btn">
-        Shop Now
-      </a>
+      <div class="hero-actions">
+        <a href="shop.html#categories" class="btn">Shop the Collection</a>
+        <a href="about.html" class="btn btn-ghost">Our Story</a>
+      </div>
     </div>
-
   </section>
 
-  <!-- MEN / WOMEN SECTION -->
-  <section class="categories" id="categories">
-
+  <!-- CATEGORIES -->
+  <section class="section" id="categories">
+    <div class="section-label">Collections</div>
     <h2>Shop By Collection</h2>
-
     <div class="category-grid">
 
-      <!-- MEN -->
       <div class="category-card">
-
-        <img src="https://i.pinimg.com/736x/2d/d5/d6/2dd5d6a7e190a35acf15d44255a37653.jpg" alt="Men Fashion">
-        <div class="category-info">
-          <h3>Men Collection</h3>
-          <br>
-
-          <a href="shop.html#categories" class="btn">
-            Shop Men
-          </a>
+        <img src="https://i.pinimg.com/736x/2d/d5/d6/2dd5d6a7e190a35acf15d44255a37653.jpg" alt="Men Collection" loading="lazy">
+        <div class="category-overlay">
+          <h3>Men</h3>
+          <a href="shop.html#categories" class="btn btn-ghost" style="font-size:10px; padding:10px 20px; width:fit-content;">Shop Men</a>
         </div>
-
       </div>
 
-      <!-- WOMEN -->
       <div class="category-card">
-
-        <img src="https://i.pinimg.com/736x/16/85/5f/16855f27a243f9e3b8a29a517d458314.jpg" alt="Women Fashion">
-        <div class="category-info">
-          <h3>Women Collection</h3>
-          <br>
-
-          <a href="shop.html#categories" class="btn">
-            Shop Women
-          </a>
+        <img src="https://i.pinimg.com/736x/16/85/5f/16855f27a243f9e3b8a29a517d458314.jpg" alt="Women Collection" loading="lazy">
+        <div class="category-overlay">
+          <h3>Women</h3>
+          <a href="shop.html#categories" class="btn btn-ghost" style="font-size:10px; padding:10px 20px; width:fit-content;">Shop Women</a>
         </div>
-
       </div>
 
     </div>
-
   </section>
 
-  <!-- PRODUCTS -->
-  <section class="products">
-
-    <h2>Featured Products</h2>
-
+  <!-- FEATURED PRODUCTS -->
+  <section class="section">
+    <div class="section-label">Featured</div>
+    <h2>Top Picks</h2>
     <div class="product-grid">
 
-      <!-- PRODUCT 1 -->
-      <div class="card">
-
-        <img src="https://i.pinimg.com/1200x/94/b5/58/94b5589fcb29715023678d80ea4ea561.jpg " alt="Christian T-shirt">
-
-        <div class="card-content">
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://i.pinimg.com/1200x/94/b5/58/94b5589fcb29715023678d80ea4ea561.jpg" alt="Jesus Saves Tee" loading="lazy">
+          <div class="product-badge">Bestseller</div>
+        </div>
+        <div class="product-body">
           <h3>Jesus Saves Tee</h3>
-
-          <p>KES 2,000</p>
-
-          <a href="Payment.html?name=Jesus+Saves+Tee&price=2000">Buy Now</a>
-          
-          </a>
+          <div class="price">KES 2,000</div>
+          <a href="Payment.html?name=Jesus+Saves+Tee&price=2000" class="product-buy">Buy Now</a>
         </div>
-
       </div>
 
-      <!-- PRODUCT 2 -->
-      <div class="card">
-
-        <img src="https://www.pinterest.com/pin/110760472081395680/" alt="Christian Jacket">
-
-        <div class="card-content">
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://i.pinimg.com/736x/2d/d5/d6/2dd5d6a7e190a35acf15d44255a37653.jpg" alt="Chosen Jacket" loading="lazy">
+          <div class="product-badge">New</div>
+        </div>
+        <div class="product-body">
           <h3>Chosen Jacket</h3>
-
-          <p>KES 4,500</p>
-
-         <a href="Payment.html?name=Hoodie&price=1500">Buy Now</a>
-        
-            
-          </a>
+          <div class="price">KES 4,500</div>
+          <a href="Payment.html?name=Chosen+Jacket&price=4500" class="product-buy">Buy Now</a>
         </div>
-
       </div>
 
-      <!-- PRODUCT 3 -->
-      <div class="card">
-
-        <img src="https://i.pinimg.com/736x/3a/4a/4a/3a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a.jpg" alt="Christian Hoodie">
-        <div class="card-content">
-          <h3>Faith Hoodie</h3>
-
-          <p>KES 3,500</p>
-
-          <a href="Payment.html?name=Faith+Hoodie&price=3500" class="btn">
-            Buy Now
-          </a>
+      <div class="product-card">
+        <div class="product-image">
+          <img src="https://i.pinimg.com/736x/16/85/5f/16855f27a243f9e3b8a29a517d458314.jpg" alt="Faith Hoodie" loading="lazy">
         </div>
-
+        <div class="product-body">
+          <h3>Faith Hoodie</h3>
+          <div class="price">KES 3,500</div>
+          <a href="Payment.html?name=Faith+Hoodie&price=3500" class="product-buy">Buy Now</a>
+        </div>
       </div>
 
     </div>
-
   </section>
 
-  <!-- ABOUT -->
-  <section class="about" id="about">
+  <!-- VERSE BANNER -->
+  <div class="verse-banner">
+    <p><strong>"I can do all things through Christ who strengthens me."</strong> — Philippians 4:13</p>
+  </div>
 
+  <!-- ABOUT + CONTACT -->
+  <section class="section" id="about">
+    <div class="section-label">Our Story</div>
     <h2>About Us</h2>
-
-    <p>
-      DopeForChristCollection is a Christian fashion brand created
-      to inspire believers to express their faith confidently through
-      modern streetwear. Our mission is to combine faith, creativity,
-      and fashion into unique collections that empower young people
-      to stand boldly for Christ while staying stylish.
-    </p>
-
-  </section>
-
-  <!-- CONTACT -->
-  <section class="contact" id="contact">
-
-    <h2>Contact Us</h2>
-
-    <p>Email: dopeforchrist@gmail.com</p>
-
-    <p>Phone: +254 712 345 678</p>
-
-    <p>Instagram: @DopeForChristCollection</p>
-
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          DopeForChristCollection is a Christian fashion brand created
+          to inspire believers to express their faith confidently through
+          modern streetwear. Our mission is to combine faith, creativity,
+          and fashion into unique collections that empower young people
+          to stand boldly for Christ while staying stylish.
+        </p>
+      </div>
+      <div class="contact-items" id="contact">
+        <div class="contact-item">
+          <div class="contact-icon">✉</div>
+          <span>dopeforchrist@gmail.com</span>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📱</div>
+          <span>+254 712 345 678</span>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">@</div>
+          <span>@DopeForChristCollection</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
-    <p>© 2026 DopeForChristCollection | All Rights Reserved</p>
+    <p>© 2026 DopeForChristCollection · All Rights Reserved</p>
+    <div class="footer-links">
+      <a href="#">Instagram</a>
+      <a href="#">WhatsApp</a>
+      <a href="about.html">About</a>
+    </div>
   </footer>
 
 </body>
